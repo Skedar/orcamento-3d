@@ -1,14 +1,28 @@
-export default {
-  state: {
-    // ... seu state atual ...
+import { createStore } from 'vuex'
+import notification from './modules/notification'
+
+export default createStore({
+  modules: {
+    notification
   },
-  getters: {
-    // ... seus getters atuais ...
+  state: {
+    loading: false,
+    error: null
   },
   mutations: {
-    // ... suas mutations atuais ...
+    SET_LOADING(state, value) {
+      state.loading = value
+    },
+    SET_ERROR(state, error) {
+      state.error = error
+    }
   },
   actions: {
-    // ... suas actions atuais ...
+    setLoading({ commit }, value) {
+      commit('SET_LOADING', value)
+    },
+    setError({ commit }, error) {
+      commit('SET_ERROR', error)
+    }
   }
-} 
+}) 
