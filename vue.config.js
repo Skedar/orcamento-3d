@@ -9,7 +9,11 @@ module.exports = defineConfig({
                 extensions: ['js', 'vue'],
                 fix: true
             })
-        ]
+        ],
+        output: {
+            filename: 'js/[name].js',
+            chunkFilename: 'js/[name].js'
+        }
     },
     css: {
         loaderOptions: {
@@ -19,7 +23,10 @@ module.exports = defineConfig({
                 `
             }
         }
-    }
+    },
+    publicPath: process.env.NODE_ENV === 'production' ? '/orcamento/' : '/',
+    outputDir: 'dist',
+    indexPath: 'orcamento.html'
 })
 
    
