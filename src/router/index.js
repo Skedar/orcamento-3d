@@ -4,7 +4,17 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Home.vue')
+    component: () => import('@/views/Home.vue')
+  },
+  {
+    path: '/orcamento',
+    name: 'Orcamento',
+    component: () => import('@/views/Orcamento.vue')
+  },
+  {
+    path: '/perfil',
+    name: 'Perfil',
+    component: () => import('@/views/Perfil.vue')
   }
 ]
 
