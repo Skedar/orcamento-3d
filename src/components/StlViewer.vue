@@ -2,17 +2,23 @@
   <div class="stl-viewer">
     <div ref="container" class="viewer-container"></div>
     <div class="viewer-controls">
-      <button @click="resetView">Reset</button>
-      <button @click="toggleRotation">Rotação</button>
-      <button @click="toggleWireframe">Wireframe</button>
+      <button @click="resetView" class="control-btn">
+        <i class="fas fa-sync"></i> Reset
+      </button>
+      <button @click="toggleRotation" class="control-btn">
+        <i class="fas fa-redo"></i> Rotação
+      </button>
+      <button @click="toggleWireframe" class="control-btn">
+        <i class="fas fa-vector-square"></i> Wireframe
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import * as THREE from 'three';
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import * as THREE from 'three'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 export default {
   name: 'StlViewer',
@@ -69,7 +75,7 @@ export default {
       this.controls = new OrbitControls(this.camera, this.renderer.domElement)
       this.controls.enableDamping = true
 
-      // Luz
+      // Luzes
       const light = new THREE.DirectionalLight(0xffffff, 1)
       light.position.set(0, 0, 1)
       this.scene.add(light)
@@ -85,7 +91,7 @@ export default {
         geometry.center()
         
         const material = new THREE.MeshPhongMaterial({
-          color: 0x00ff00,
+          color: 0x3498db, // Azul mais agradável
           specular: 0x111111,
           shininess: 200
         })
@@ -93,21 +99,23 @@ export default {
         this.mesh = new THREE.Mesh(geometry, material)
         this.scene.add(this.mesh)
         
-        // Ajusta a câmera para enquadrar o modelo
-        const box = new THREE.Box3().setFromObject(this.mesh)
-        const size = box.getSize(new THREE.Vector3())
-        const center = box.getCenter(new THREE.Vector3())
-        
-        const maxDim = Math.max(size.x, size.y, size.z)
-        const fov = this.camera.fov * (Math.PI / 180)
-        let cameraZ = Math.abs(maxDim / Math.sin(fov / 2))
-        
-        this.camera.position.z = cameraZ * 1.5
-        this.camera.updateProjectionMatrix()
-        
-        this.controls.target.copy(center)
-        this.controls.update()
+        this.fitCameraToObject()
       })
+    },
+    fitCameraToObject() {
+      const box = new THREE.Box3().setFromObject(this.mesh)
+      const size = box.getSize(new THREE.Vector3())
+      const center = box.getCenter(new THREE.Vector3())
+      
+      const maxDim = Math.max(size.x, size.y, size.z)
+      const fov = this.camera.fov * (Math.PI / 180)
+      let cameraZ = Math.abs(maxDim / Math.sin(fov / 2))
+      
+      this.camera.position.z = cameraZ * 1.5
+      this.camera.updateProjectionMatrix()
+      
+      this.controls.target.copy(center)
+      this.controls.update()
     },
     animate() {
       this.animationId = requestAnimationFrame(this.animate)
@@ -159,6 +167,9 @@ export default {
   width: 100%;
   height: 400px;
   position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .viewer-container {
@@ -169,23 +180,41 @@ export default {
 
 .viewer-controls {
   position: absolute;
-  bottom: 10px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.viewer-controls button {
+.control-btn {
   padding: 8px 16px;
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.viewer-controls button:hover {
-  background: #f5f5f5;
+.control-btn:hover {
+  background: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+.control-btn i {
+  font-size: 12px;
 }
 </style> 
