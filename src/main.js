@@ -1,19 +1,42 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
+import { createStore } from 'vuex'
 import axios from 'axios'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap'
 
+// Store Vuex
+const store = createStore({
+  state() {
+    return {
+      loading: false,
+      error: null,
+      success: null
+    }
+  },
+  mutations: {
+    SET_LOADING(state, value) {
+      state.loading = value
+    },
+    SET_ERROR(state, error) {
+      state.error = error
+    },
+    SET_SUCCESS(state, message) {
+      state.success = message
+    }
+  }
+})
+
+// Configuração do Axios
+axios.defaults.baseURL = process.env.VUE_APP_API_URL || ''
+
+// Criar e montar a aplicação
 const app = createApp(App)
-const pinia = createPinia()
 
-// Configuração global do axios
-axios.defaults.baseURL = process.env.VUE_APP_API_URL || 'http://localhost:3000'
-
-app.use(pinia)
+// Usar plugins
 app.use(router)
+app.use(store)
+
+// Montar a aplicação
 app.mount('#app')
 
 
