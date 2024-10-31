@@ -11,8 +11,6 @@ export default {
 </script>
 
 <style lang="scss">
-@use '@/assets/scss/_variables.scss' as vars;
-
 #app {
   font-family: 'Arial', sans-serif;
   -webkit-font-smoothing: antialiased;

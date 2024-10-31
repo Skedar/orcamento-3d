@@ -1,5 +1,3 @@
-@use '_variables' as vars;
-
 // Estilos globais
 body {
   margin: 0;
@@ -10,5 +8,5 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 vars.$spacing-base;
+  padding: 0 1rem;
 }
