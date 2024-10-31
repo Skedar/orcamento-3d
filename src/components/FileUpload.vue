@@ -4,24 +4,40 @@
          @drop.prevent="handleDrop"
          @dragover.prevent="dragover = true"
          @dragleave.prevent="dragover = false"
-         :class="{ 'is-dragover': dragover }">
+         :class="{ 
+           'is-dragover': dragover,
+           'is-uploading': uploading 
+         }">
       
       <input type="file" 
              ref="fileInput" 
              @change="handleFileSelect" 
              accept=".stl"
-             class="file-input" />
+             class="file-input"
+             :disabled="uploading" />
       
       <div class="upload-content">
-        <span class="upload-icon">📁</span>
-        <p class="upload-text">
-          {{ uploading ? 'Enviando arquivo...' : 'Arraste seu arquivo STL aqui ou' }}
-          <button v-if="!uploading" 
-                  @click="$refs.fileInput.click()" 
-                  class="upload-button">
-            selecione um arquivo
-          </button>
-        </p>
+        <template v-if="!uploading">
+          <span class="upload-icon">📁</span>
+          <p class="upload-text">
+            Arraste seu arquivo STL aqui ou
+            <button @click="$refs.fileInput.click()" class="upload-button">
+              selecione um arquivo
+            </button>
+          </p>
+        </template>
+        
+        <template v-else>
+          <div class="upload-progress">
+            <div class="progress">
+              <div class="progress-bar" 
+                   :style="{ width: `${uploadProgress}%` }"
+                   :class="{ 'is-animating': uploading }">
+              </div>
+            </div>
+            <p class="upload-status">{{ uploadStatus }} ({{ uploadProgress }}%)</p>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -33,7 +49,9 @@ export default {
   data() {
     return {
       dragover: false,
-      uploading: false
+      uploading: false,
+      uploadProgress: 0,
+      uploadStatus: ''
     }
   },
   methods: {
@@ -50,14 +68,61 @@ export default {
         this.processFile(files[0])
       }
     },
-    processFile(file) {
+    async processFile(file) {
       if (!file.name.toLowerCase().endsWith('.stl')) {
         alert('Por favor, selecione um arquivo STL')
         return
       }
 
-      // Aqui vamos implementar o upload para o Lambda
-      console.log('Arquivo selecionado:', file.name)
+      try {
+        this.uploading = true
+        this.uploadProgress = 0
+        this.uploadStatus = 'Iniciando upload'
+
+        const progressInterval = setInterval(() => {
+          if (this.uploadProgress < 90) {
+            this.uploadProgress += 5
+            this.uploadStatus = 'Enviando arquivo'
+          }
+        }, 200)
+
+        const response = await fetch(process.env.VUE_APP_LAMBDA_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            fileName: file.name,
+            fileType: 'model/stl'
+          })
+        })
+
+        clearInterval(progressInterval)
+
+        if (!response.ok) {
+          throw new Error('Erro ao processar arquivo')
+        }
+
+        const data = await response.json()
+        this.uploadProgress = 100
+        this.uploadStatus = 'Upload concluído!'
+        
+        setTimeout(() => {
+          this.$emit('upload-success', data)
+          this.resetUpload()
+        }, 1000)
+
+      } catch (error) {
+        console.error('Erro:', error)
+        this.uploadProgress = 0
+        this.uploadStatus = 'Erro no upload'
+        this.$emit('upload-error', error.message)
+      }
+    },
+    resetUpload() {
+      this.uploading = false
+      this.uploadProgress = 0
+      this.uploadStatus = ''
     }
   }
 }
@@ -80,6 +145,12 @@ export default {
     border-color: #2196f3;
     background-color: rgba(33, 150, 243, 0.05);
   }
+  
+  &.is-uploading {
+    border-color: #2196f3;
+    background-color: rgba(33, 150, 243, 0.05);
+    pointer-events: none;
+  }
 }
 
 .file-input {
@@ -90,6 +161,10 @@ export default {
   left: 0;
   opacity: 0;
   cursor: pointer;
+  
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 .upload-content {
@@ -120,6 +195,52 @@ export default {
   
   &:hover {
     text-decoration: underline;
+  }
+}
+
+.upload-progress {
+  padding: 1rem;
+}
+
+.progress {
+  height: 6px;
+  background-color: #f5f5f5;
+  border-radius: 3px;
+  margin: 1rem 0;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #ff9800;
+  transition: width 0.5s ease;
+  
+  &.is-animating {
+    background: linear-gradient(
+      90deg,
+      #ff9800 0%,
+      #ffa726 50%,
+      #ff9800 100%
+    );
+    background-size: 200% 100%;
+    animation: loading 2s infinite;
+  }
+}
+
+.upload-status {
+  margin: 0.5rem 0 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
   }
 }
 </style> 
