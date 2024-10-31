@@ -81,21 +81,35 @@ export default {
         this.statusText = 'Analisando'
         this.analysisData = null
 
-        const response = await fetch(`${process.env.VUE_APP_LAMBDA_URL}/analyze`, {
+        console.log('Iniciando análise para fileId:', fileId)
+        
+        const url = process.env.VUE_APP_LAMBDA_URL
+        console.log('URL da requisição:', url)
+
+        const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ fileId })
+          body: JSON.stringify({ 
+            fileId,
+            action: 'analyze'
+          })
         })
 
         if (!response.ok) {
-          throw new Error('Erro na análise')
+          const errorText = await response.text()
+          console.error('Resposta não-OK:', response.status, errorText)
+          throw new Error(`Erro na análise: ${response.status}`)
         }
 
-        this.analysisData = await response.json()
+        const data = await response.json()
+        console.log('Resposta da análise:', data)
+
+        this.analysisData = data
         this.status = 'success'
         this.statusText = 'Análise Concluída'
+        
       } catch (error) {
         console.error('Erro na análise:', error)
         this.status = 'error'
