@@ -49,21 +49,20 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import FileUpload from '@/components/FileUpload.vue'
+import NotificationList from '@/components/NotificationList.vue'
 
-export default defineComponent({
-  name: 'Home',
-  
+export default {
+  name: 'HomePage',
+  components: {
+    FileUpload,
+    NotificationList
+  },
   setup() {
-    const store = useStore()
-    const router = useRouter()
-    
-    // Limpar erros ao entrar na página
-    store.dispatch('setError', null)
-    
-    return {}
+    return {
+      // suas props aqui
+    }
   }
-})
+}
 </script>
