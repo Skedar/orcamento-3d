@@ -1,0 +1,54 @@
+service: orcamento-3d-upload
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: sa-east-1
+  environment:
+    BUCKET_NAME: ${self:custom.bucketName}
+  
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+        - s3:HeadObject
+      Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
+
+custom:
+  bucketName: orcamento-3d-files-${self:provider.stage}
+
+functions:
+  getUploadUrl:
+    handler: lambda/uploadHandler.handler
+    events:
+      - http:
+          path: /api/getUploadUrl
+          method: post
+          cors: true
+  
+  processFile:
+    handler: lambda/processFile.handler
+    events:
+      - http:
+          path: /api/processFile
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    UploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - PUT
+                - GET
+                - HEAD
+              AllowedOrigins:
+                - '*'
+              MaxAge: 3000 

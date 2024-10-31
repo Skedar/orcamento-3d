@@ -1,6 +1,14 @@
 {
-  enforce: "pre",
-  test: /\.js$/,
-  exclude: /node_modules/,
-  loader: "eslint-loader"
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "plugin:vue/vue3-essential",
+    "eslint:recommended"
+  ],
+  "parserOptions": {
+    "parser": "@babel/eslint-parser"
+  },
+  "rules": {}
 }
