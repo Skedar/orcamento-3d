@@ -87,20 +87,35 @@
       },
       loadModel() {
         const loader = new STLLoader()
-        loader.load(this.fileUrl, (geometry) => {
-          geometry.center()
-          
-          const material = new THREE.MeshPhongMaterial({
-            color: 0x3498db, // Azul mais agradável
-            specular: 0x111111,
-            shininess: 200
-          })
-          
-          this.mesh = new THREE.Mesh(geometry, material)
-          this.scene.add(this.mesh)
-          
-          this.fitCameraToObject()
-        })
+        loader.load(
+          this.fileUrl,
+          (geometry) => {
+            try {
+              geometry.center()
+              const material = new THREE.MeshPhongMaterial({
+                color: 0x3498db,
+                specular: 0x111111,
+                shininess: 200
+              })
+              
+              if (this.mesh) {
+                this.scene.remove(this.mesh)
+              }
+              
+              this.mesh = new THREE.Mesh(geometry, material)
+              this.scene.add(this.mesh)
+              this.fitCameraToObject()
+            } catch (error) {
+              console.error('Erro ao processar geometria:', error)
+            }
+          },
+          (xhr) => {
+            console.log((xhr.loaded / xhr.total * 100) + '% carregado')
+          },
+          (error) => {
+            console.error('Erro ao carregar STL:', error)
+          }
+        )
       },
       fitCameraToObject() {
         const box = new THREE.Box3().setFromObject(this.mesh)
