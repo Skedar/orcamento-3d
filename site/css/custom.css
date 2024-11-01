@@ -1,0 +1,65 @@
+/*
+
+[Custom Stylesheet]
+
+Project: QuickFix - Multipurpose Servicing and Repairing HTML Template
+Version: 1.3
+Author : themelooks.com
+
+*/
+.float{
+	position:fixed;
+	width:62px;
+	height:62px;
+	bottom:35px;
+	left:20px;
+	background-color:#25d366;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+  font-size:34px;
+	box-shadow: 2px 2px 3px #999;
+  z-index:100;
+}
+
+.my-float{
+	margin-top:16px;
+}
+
+.faq-container {
+	padding: 40px 20px;
+}
+.faq-question {
+	cursor: pointer;
+	color: #007bff;
+	font-weight: bold;
+	transition: color 0.3s ease;
+}
+.faq-question:hover {
+	color: #ec6b15;
+}
+.faq-answer {
+	display: none;
+	padding: 10px;
+	margin-top: 10px;
+	background-color: #e9ecef;
+	border-radius: 5px;
+}
+.faq-item {
+	margin-bottom: 20px;
+	
+}
+
+.faq-item a {
+    color: #ec6b15; /* Cor inicial */
+    text-decoration: none;
+    transition: color 0.3s, font-size 0.3s; /* Transição suave para cor e tamanho */
+    font-weight: bold; /* Negrito no link */
+}
+
+/* Ao passar o mouse sobre os links dentro de .faq-item */
+.faq-item a:hover {
+    color: #ff9900; /* Nova cor ao passar o mouse */
+	
+
+}
