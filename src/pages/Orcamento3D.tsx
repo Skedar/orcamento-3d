@@ -58,8 +58,11 @@ interface PrintOptions {
   finishing: number[];
 }
 
+interface QuoteResponse {
+  totalPrice: number;
+}
+
 const Orcamento3D = () => {
-  const [file, setFile] = useState<File | null>(null);
   const [quote, setQuote] = useState<{totalPrice: number} | null>(null);
   
   const [selectedPrinter, setSelectedPrinter] = useState<Printer>(printData[0]);
@@ -111,7 +114,7 @@ const Orcamento3D = () => {
     formData.append('options', JSON.stringify(options));
 
     try {
-      const response = await api.post('/calculate', formData);
+      const response = await api.post<QuoteResponse>('/calculate', formData);
       setQuote(response.data);
     } catch (error) {
       console.error('Erro ao calcular:', error);

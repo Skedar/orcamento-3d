@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+import { BufferGeometry } from 'three';
 
 const SimpleStlViewer = ({ url }: { url: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,8 +22,8 @@ const SimpleStlViewer = ({ url }: { url: string }) => {
     scene.add(light);
 
     // Carregar o STL
-    const loader = new THREE.STLLoader();
-    loader.load(url, (geometry) => {
+    const loader = new STLLoader();
+    loader.load(url, (geometry: BufferGeometry) => {
       const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
       const mesh = new THREE.Mesh(geometry, material);
       
