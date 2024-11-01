@@ -1,0 +1,155 @@
+[
+    {
+      "id": 1,
+      "label": "Ender 3 V2",
+      "technology": "FDM (Material Extrusion)",
+      "hourly_rate": 15.00,
+      "materials": [
+        {
+          "id": 1,
+          "label": "PLA Premium",
+          "material_type": "PLA",
+          "pricepercm3": 0.25,
+          "description": "Material mais comum para impressão 3D, ótimo acabamento",
+          "colors": [
+            {
+              "id": 1,
+              "label": "Preto",
+              "rgb": "rgb(0, 0, 0)"
+            },
+            {
+              "id": 2,
+              "label": "Branco",
+              "rgb": "rgb(255, 255, 255)"
+            },
+            {
+              "id": 3,
+              "label": "Cinza",
+              "rgb": "rgb(128, 128, 128)"
+            }
+          ],
+          "infills": [
+            {
+              "id": 1,
+              "label": "Leve",
+              "percentage": "20%",
+              "multiplier": 1.1
+            },
+            {
+              "id": 2,
+              "label": "Médio",
+              "percentage": "50%",
+              "multiplier": 1.3
+            },
+            {
+              "id": 3,
+              "label": "Forte",
+              "percentage": "80%",
+              "multiplier": 1.5
+            }
+          ],
+          "layer_heights": [
+            {
+              "id": 1,
+              "label": "Rápida",
+              "layerHeight": "0.3mm",
+              "multiplier": 1.0
+            },
+            {
+              "id": 2,
+              "label": "Normal",
+              "layerHeight": "0.2mm",
+              "multiplier": 1.2
+            },
+            {
+              "id": 3,
+              "label": "Fina",
+              "layerHeight": "0.1mm",
+              "multiplier": 1.5
+            }
+          ],
+          "finishings": [
+            {
+              "id": 1,
+              "label": "Básico",
+              "description": "Remoção de suportes básica",
+              "price": 10.00
+            },
+            {
+              "id": 2,
+              "label": "Lixamento",
+              "description": "Lixamento para acabamento mais suave",
+              "price": 25.00
+            },
+            {
+              "id": 3,
+              "label": "Pintura",
+              "description": "Pintura básica com primer e tinta",
+              "price": 45.00
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "label": "PETG",
+          "material_type": "PETG",
+          "pricepercm3": 0.30,
+          "description": "Material resistente e durável",
+          "colors": [
+            {
+              "id": 4,
+              "label": "Transparente",
+              "rgb": "rgb(240, 240, 240)"
+            },
+            {
+              "id": 5,
+              "label": "Preto",
+              "rgb": "rgb(0, 0, 0)"
+            }
+          ],
+          "infills": [
+            {
+              "id": 4,
+              "label": "Médio",
+              "percentage": "50%",
+              "multiplier": 1.3
+            },
+            {
+              "id": 5,
+              "label": "Forte",
+              "percentage": "80%",
+              "multiplier": 1.5
+            }
+          ],
+          "layer_heights": [
+            {
+              "id": 4,
+              "label": "Normal",
+              "layerHeight": "0.2mm",
+              "multiplier": 1.2
+            },
+            {
+              "id": 5,
+              "label": "Fina",
+              "layerHeight": "0.1mm",
+              "multiplier": 1.5
+            }
+          ],
+          "finishings": [
+            {
+              "id": 4,
+              "label": "Básico",
+              "description": "Remoção de suportes básica",
+              "price": 10.00
+            },
+            {
+              "id": 5,
+              "label": "Lixamento Especial",
+              "description": "Lixamento específico para PETG",
+              "price": 30.00
+            }
+          ]
+        }
+      ]
+    }
+  ]
