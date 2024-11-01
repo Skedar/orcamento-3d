@@ -88,22 +88,26 @@
           return
         }
   
-        this.selectedFile = file
-  
-        // Criar URL do arquivo
-        this.fileUrl = URL.createObjectURL(file)
-  
         try {
           this.uploading = true
           this.uploadProgress = 0
-          this.uploadStatus = 'Iniciando upload'
+          this.uploadStatus = 'Iniciando análise'
   
-          const progressInterval = setInterval(() => {
-            if (this.uploadProgress < 90) {
-              this.uploadProgress += 5
-              this.uploadStatus = 'Enviando arquivo'
-            }
-          }, 200)
+          // Ler o arquivo como ArrayBuffer
+          const arrayBuffer = await new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = () => resolve(reader.result)
+            reader.onerror = reject
+            reader.readAsArrayBuffer(file)
+          })
+  
+          // Converter para Base64
+          const base64 = btoa(
+            new Uint8Array(arrayBuffer)
+              .reduce((data, byte) => data + String.fromCharCode(byte), '')
+          )
+  
+          console.log('Iniciando análise para fileId:', file.name)
   
           const response = await fetch(process.env.VUE_APP_LAMBDA_URL, {
             method: 'POST',
@@ -112,31 +116,31 @@
             },
             body: JSON.stringify({
               fileName: file.name,
-              fileType: 'model/stl'
+              fileContent: base64
             })
           })
-  
-          clearInterval(progressInterval)
   
           if (!response.ok) {
             throw new Error('Erro ao processar arquivo')
           }
   
           const data = await response.json()
+          console.log('Resposta da análise:', data)
+  
           this.uploadProgress = 100
-          this.uploadStatus = 'Upload concluído!'
-          
-          setTimeout(() => {
-            this.$emit('upload-success', data)
-            this.resetUpload()
-          }, 1000)
+          this.uploadStatus = 'Análise concluída!'
+  
+          // Emitir evento com os dados processados
+          this.$emit('file-processed', {
+            file: this.selectedFile,
+            analysis: data
+          })
   
         } catch (error) {
           console.error('Erro:', error)
           this.uploadProgress = 0
-          this.uploadStatus = 'Erro no upload'
+          this.uploadStatus = 'Erro na análise'
           this.$emit('upload-error', error.message)
-          this.fileUrl = null
         }
       },
       resetUpload() {
@@ -147,6 +151,24 @@
           URL.revokeObjectURL(this.fileUrl)
           this.fileUrl = null
         }
+      },
+      // Função auxiliar para ler arquivo como ArrayBuffer
+      readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result)
+          reader.onerror = reject
+          reader.readAsArrayBuffer(file)
+        })
+      },
+      // Função auxiliar para converter ArrayBuffer para Base64
+      arrayBufferToBase64(buffer) {
+        let binary = ''
+        const bytes = new Uint8Array(buffer)
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i])
+        }
+        return window.btoa(binary)
       }
     }
   }
