@@ -8,8 +8,13 @@ const Orcamento3D: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      await loadScripts();
-      setIsLoading(false);
+      try {
+        await loadScripts();
+      } catch (error) {
+        console.error('Erro ao carregar scripts:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     init();
   }, []);
