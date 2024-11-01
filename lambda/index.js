@@ -1,11 +1,14 @@
 const STLParser = require('stl-parser');
 
 exports.handler = async (event) => {
+    console.log('Evento recebido:', JSON.stringify(event));
+    
     try {
         // Configuração de CORS
         const headers = {
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': true,
+            'Access-Control-Allow-Methods': 'POST,OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
         };
         
         // Parse do corpo da requisição
@@ -24,8 +27,13 @@ exports.handler = async (event) => {
         
         return {
             statusCode: 200,
-            headers,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST,OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
             body: JSON.stringify({
+                message: 'Análise concluída',
                 dimensions,
                 volume,
                 printTime
@@ -37,10 +45,11 @@ exports.handler = async (event) => {
             statusCode: 500,
             headers: {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Methods': 'POST,OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
             },
             body: JSON.stringify({
-                error: 'Erro ao processar arquivo STL'
+                error: error.message
             })
         };
     }
