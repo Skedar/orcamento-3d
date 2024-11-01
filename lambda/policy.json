@@ -1,0 +1,16 @@
+﻿{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "lambda:InvokeFunction",
+            "Resource": "arn:aws:lambda:sa-east-1:247715735383:function:stl-calculator",
+            "Condition": {
+                "StringEquals": {
+                    "AWS:SourceOrigin": ["https://seu-dominio.com"]
+                }
+            }
+        }
+    ]
+}
