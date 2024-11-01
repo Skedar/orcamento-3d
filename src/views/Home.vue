@@ -30,8 +30,17 @@
 </template>
 
 <script>
+import FileUpload from '@/components/FileUpload.vue'
+import FileAnalysis from '@/components/FileAnalysis.vue'
+import StlViewer from '@/components/StlViewer.vue'
+
 export default {
-  // ... imports existentes ...
+  name: 'HomePage',
+  components: {
+    FileUpload,
+    FileAnalysis,
+    StlViewer
+  },
   data() {
     return {
       selectedFile: null,
