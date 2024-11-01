@@ -93,7 +93,6 @@
           this.uploadProgress = 0
           this.uploadStatus = 'Iniciando análise'
   
-          // Ler o arquivo como ArrayBuffer
           const arrayBuffer = await new Promise((resolve, reject) => {
             const reader = new FileReader()
             reader.onload = () => resolve(reader.result)
@@ -101,11 +100,22 @@
             reader.readAsArrayBuffer(file)
           })
   
-          // Converter para Base64
-          const base64 = btoa(
-            new Uint8Array(arrayBuffer)
-              .reduce((data, byte) => data + String.fromCharCode(byte), '')
-          )
+          let base64
+          try {
+            base64 = btoa(
+              new Uint8Array(arrayBuffer)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            )
+          } catch (error) {
+            if (error.name === 'InvalidCharacterError') {
+              console.error('Erro na conversão do arquivo:', error)
+              this.uploadStatus = 'Erro: arquivo muito grande'
+              this.uploading = false
+              this.$emit('upload-error', 'Arquivo muito grande para processamento')
+              return
+            }
+            throw error
+          }
   
           console.log('Iniciando análise para fileId:', file.name)
   
@@ -130,9 +140,8 @@
           this.uploadProgress = 100
           this.uploadStatus = 'Análise concluída!'
   
-          // Emitir evento com os dados processados
           this.$emit('file-processed', {
-            file: this.selectedFile,
+            file: file,
             analysis: data
           })
   
@@ -141,6 +150,8 @@
           this.uploadProgress = 0
           this.uploadStatus = 'Erro na análise'
           this.$emit('upload-error', error.message)
+        } finally {
+          this.uploading = false
         }
       },
       resetUpload() {

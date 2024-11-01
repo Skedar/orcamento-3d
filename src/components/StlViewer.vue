@@ -51,6 +51,10 @@ export default {
   mounted() {
     this.initScene()
     window.addEventListener('resize', this.onWindowResize)
+    
+    if (this.file) {
+      this.loadModel(this.file)
+    }
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.onWindowResize)
@@ -88,6 +92,8 @@ export default {
       this.animate()
     },
     loadModel(file) {
+      if (!file) return
+
       const reader = new FileReader()
       reader.onload = (e) => {
         const loader = new STLLoader()
@@ -109,7 +115,12 @@ export default {
           this.centerCamera()
         } catch (error) {
           console.error('Erro ao carregar modelo:', error)
+          this.$emit('model-error', 'Erro ao carregar o modelo 3D')
         }
+      }
+      reader.onerror = () => {
+        console.error('Erro ao ler arquivo')
+        this.$emit('model-error', 'Erro ao ler o arquivo')
       }
       reader.readAsArrayBuffer(file)
     },

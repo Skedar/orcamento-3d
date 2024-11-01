@@ -8,10 +8,15 @@
         @upload-error="handleUploadError"
       />
 
-      <div class="results-container" v-if="selectedFile">
+      <div v-if="uploadError" class="error-message">
+        {{ uploadError }}
+      </div>
+
+      <div class="results-container" v-if="selectedFile && !uploadError">
         <StlViewer 
           :file="selectedFile"
           class="viewer-section"
+          @model-error="handleModelError"
         />
         
         <FileAnalysis 
@@ -25,63 +30,45 @@
 </template>
 
 <script>
-import FileUpload from '@/components/FileUpload.vue'
-import FileAnalysis from '@/components/FileAnalysis.vue'
-import StlViewer from '@/components/StlViewer.vue'
-
 export default {
-  name: 'Home',
-  components: {
-    FileUpload,
-    FileAnalysis,
-    StlViewer
-  },
+  // ... imports existentes ...
   data() {
     return {
       selectedFile: null,
-      analysisData: null
+      analysisData: null,
+      uploadError: null
     }
   },
   methods: {
     handleFileProcessed(data) {
+      this.uploadError = null
       this.selectedFile = data.file
       this.analysisData = data.analysis
     },
     handleUploadError(error) {
       console.error('Erro no upload:', error)
-      // Implementar notificação de erro
+      this.uploadError = error
+      this.selectedFile = null
+      this.analysisData = null
+    },
+    handleModelError(error) {
+      console.error('Erro no modelo:', error)
+      this.uploadError = error
     }
   }
 }
 </script>
 
 <style scoped>
-.home {
-  padding: 2rem 0;
-}
+/* ... estilos existentes ... */
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-h1 {
-  margin-bottom: 2rem;
-  color: #333;
+.error-message {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  color: #dc2626;
   text-align: center;
-}
-
-.results-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-@media (min-width: 992px) {
-  .results-container {
-    grid-template-columns: 3fr 2fr;
-  }
 }
 </style>
