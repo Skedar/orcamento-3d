@@ -1,31 +1,29 @@
-// Tipos globais da aplicação
-export interface CommonProps {
-  children?: React.ReactNode;
-}
+declare module '../config/data3dprint.json' {
+  interface PrintItem {
+    id: string;
+    name: string;
+    price: number;
+  }
 
-// Outros tipos serão adicionados conforme necessário 
+  interface Material extends PrintItem {
+    description: string;
+  }
 
-export interface PrintItem {
-  id: string;
-  name: string;
-  price: number;
-}
+  interface Quality extends PrintItem {
+    layerHeight: number;
+  }
 
-export interface Material extends PrintItem {
-  description: string;
-}
+  interface Infill extends PrintItem {
+    percentage: number;
+  }
 
-export interface Quality extends PrintItem {
-  layerHeight: number;
-}
+  interface PrintData {
+    materials: Material[];
+    colors: PrintItem[];
+    qualities: Quality[];
+    infills: Infill[];
+  }
 
-export interface Infill extends PrintItem {
-  percentage: number;
-}
-
-export interface PrintData {
-  materials: Material[];
-  colors: PrintItem[];
-  qualities: Quality[];
-  infills: Infill[];
+  const value: PrintData;
+  export default value;
 } 
