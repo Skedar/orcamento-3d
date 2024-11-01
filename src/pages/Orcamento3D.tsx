@@ -4,12 +4,10 @@ import Footer from '../components/layout/Footer';
 
 const Orcamento3D: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="wrapper">
       <Header />
-      <main className="flex-grow">
-        <h1 className="text-3xl font-bold text-center py-10">
-          Orçamento 3D
-        </h1>
+      <main className="main-content">
+        <h1>Orçamento 3D</h1>
       </main>
       <Footer />
     </div>
