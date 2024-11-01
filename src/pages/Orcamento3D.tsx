@@ -1,16 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { loadScripts } from '../utils/scriptLoader';
 
 const Orcamento3D: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    loadScripts();
+    const init = async () => {
+      await loadScripts();
+      setIsLoading(false);
+    };
+    init();
   }, []);
 
   return (
     <div className="wrapper">
-      <div className="preloader bg--color-theme"></div>
+      {isLoading && <div className="preloader bg--color-theme"></div>}
       <Header />
       <div className="page-header--section text-center">
         <div className="page--title pd--130-0" data-bg-img="/img/page-header-img.jpg">

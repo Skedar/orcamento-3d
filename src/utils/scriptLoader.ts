@@ -1,15 +1,30 @@
-export const loadScripts = () => {
-  const scripts = [
-    '/js/jquery.min.js',
-    '/js/jquery-ui.min.js',
-    '/js/bootstrap.min.js',
-    '/js/main.js'
-  ];
+export const initializePlugins = () => {
+  if (window.jQuery) {
+    // Inicializa o FakeLoader
+    const $preloader = jQuery('.preloader');
+    if ($preloader.length) {
+      $preloader.fakeLoader({
+        timeToHide: 1200,
+        bgColor: '#1da1f2',
+        spinner: 'spinner2'
+      });
+    }
 
-  scripts.forEach(src => {
-    const script = document.createElement('script');
-    script.src = src;
-    script.async = true;
-    document.body.appendChild(script);
+    // Inicializa outros plugins conforme necessário
+    jQuery('[data-trigger="sticky"]').sticky({
+      zIndex: 999
+    });
+
+    // ... outras inicializações de plugins
+  }
+};
+
+export const loadScripts = () => {
+  return new Promise((resolve) => {
+    // Como os scripts já estão no HTML, apenas inicializamos os plugins
+    setTimeout(() => {
+      initializePlugins();
+      resolve(true);
+    }, 100);
   });
 }; 
