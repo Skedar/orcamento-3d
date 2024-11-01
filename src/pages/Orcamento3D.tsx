@@ -1,162 +1,123 @@
-import React, { useState } from 'react';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
-import StlViewer from '../components/StlViewer';
-import * as THREE from 'three';
+import { useState } from 'react';
+import printData from '../../lambda/data3dprint.json';
+import api from '../services/api';
 
-interface FormData {
-  arquivo: File | null;
-  dimensoes: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  escala: number;
-  volume: number;
+interface PrintOptions {
+  material: string;
+  color: string;
+  quality: string;
+  infill: string;
 }
 
-const Orcamento3D: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    arquivo: null,
-    dimensoes: { x: 0, y: 0, z: 0 },
-    escala: 1,
-    volume: 0
+const Orcamento3D = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [quote, setQuote] = useState<{totalPrice: number} | null>(null);
+  const [options, setOptions] = useState<PrintOptions>({
+    material: printData.materials[0].id,
+    color: printData.colors[0].id,
+    quality: printData.qualities[0].id,
+    infill: printData.infills[0].id
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData(prev => ({
-        ...prev,
-        arquivo: e.target.files![0]
-      }));
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('options', JSON.stringify(options));
+
+    try {
+      const response = await api.post('/calculate', formData);
+      setQuote(response.data);
+    } catch (error) {
+      console.error('Erro ao calcular:', error);
     }
   };
 
-  const handleModelLoad = (geometry: THREE.BufferGeometry) => {
-    const boundingBox = new THREE.Box3().setFromBufferAttribute(
-      geometry.getAttribute('position') as THREE.BufferAttribute
-    );
-    
-    const dimensions = new THREE.Vector3();
-    boundingBox.getSize(dimensions);
-    
-    // Atualizar dimensões e calcular volume
-    const volume = dimensions.x * dimensions.y * dimensions.z;
-    setFormData(prev => ({
-      ...prev,
-      dimensoes: {
-        x: dimensions.x,
-        y: dimensions.y,
-        z: dimensions.z
-      },
-      volume: volume
-    }));
-  };
-
-  const handleDimensionChange = (axis: 'x' | 'y' | 'z', value: number) => {
-    setFormData(prev => ({
-      ...prev,
-      dimensoes: {
-        ...prev.dimensoes,
-        [axis]: value
-      }
-    }));
-  };
-
-  const handleScaleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newScale = parseFloat(e.target.value);
-    setFormData(prev => ({
-      ...prev,
-      escala: newScale
-    }));
-  };
-
   return (
-    <div className="wrapper">
-      <Header />
+    <div className="max-w-2xl mx-auto p-4">
+      <h2 className="text-2xl mb-4">Orçamento de Impressão 3D</h2>
       
-      <main className="main--content">
-        <div className="container">
-          <div className="row">
-            {/* Visualizador 3D */}
-            <div className="col-md-8">
-              <StlViewer 
-                stlFile={formData.arquivo} 
-                onModelLoad={handleModelLoad}
-              />
-            </div>
+      <div className="mb-4">
+        <input 
+          type="file" 
+          accept=".stl" 
+          onChange={handleFileChange}
+          className="mb-4" 
+        />
+      </div>
 
-            {/* Formulário */}
-            <div className="col-md-4">
-              <div className="form-group">
-                <label>Arquivo STL</label>
-                <input 
-                  type="file"
-                  onChange={handleFileChange}
-                  accept=".stl"
-                  className="form-control"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Dimensões (mm)</label>
-                <div className="row">
-                  <div className="col-xs-4">
-                    <input
-                      type="number"
-                      value={formData.dimensoes.x}
-                      onChange={(e) => handleDimensionChange('x', parseFloat(e.target.value))}
-                      className="form-control"
-                      placeholder="X"
-                    />
-                  </div>
-                  <div className="col-xs-4">
-                    <input
-                      type="number"
-                      value={formData.dimensoes.y}
-                      onChange={(e) => handleDimensionChange('y', parseFloat(e.target.value))}
-                      className="form-control"
-                      placeholder="Y"
-                    />
-                  </div>
-                  <div className="col-xs-4">
-                    <input
-                      type="number"
-                      value={formData.dimensoes.z}
-                      onChange={(e) => handleDimensionChange('z', parseFloat(e.target.value))}
-                      className="form-control"
-                      placeholder="Z"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Escala</label>
-                <input
-                  type="number"
-                  value={formData.escala}
-                  onChange={handleScaleChange}
-                  className="form-control"
-                  step="0.1"
-                  min="0.1"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Volume (cm³)</label>
-                <input
-                  type="text"
-                  value={(formData.volume / 1000).toFixed(2)}
-                  className="form-control"
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
+      <div className="grid gap-4">
+        <div className="form-group">
+          <label className="block mb-2">Material:</label>
+          <select 
+            value={options.material}
+            onChange={(e) => setOptions({...options, material: e.target.value})}
+            className="w-full p-2 border rounded"
+          >
+            {printData.materials.map(item => (
+              <option key={item.id} value={item.id}>
+                {item.name} - {item.description}
+              </option>
+            ))}
+          </select>
         </div>
-      </main>
-      <Footer />
+
+        <div className="form-group">
+          <label className="block mb-2">Cor:</label>
+          <select 
+            value={options.color}
+            onChange={(e) => setOptions({...options, color: e.target.value})}
+            className="w-full p-2 border rounded"
+          >
+            {printData.colors.map(item => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label className="block mb-2">Qualidade:</label>
+          <select 
+            value={options.quality}
+            onChange={(e) => setOptions({...options, quality: e.target.value})}
+            className="w-full p-2 border rounded"
+          >
+            {printData.qualities.map(item => (
+              <option key={item.id} value={item.id}>
+                {item.name} ({item.layerHeight}mm)
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label className="block mb-2">Preenchimento:</label>
+          <select 
+            value={options.infill}
+            onChange={(e) => setOptions({...options, infill: e.target.value})}
+            className="w-full p-2 border rounded"
+          >
+            {printData.infills.map(item => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {quote && (
+        <div className="mt-4 p-4 bg-gray-100 rounded">
+          <h3 className="text-xl mb-2">Orçamento</h3>
+          <p className="text-2xl font-bold">
+            R$ {quote.totalPrice.toFixed(2)}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
