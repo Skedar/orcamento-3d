@@ -1,11 +1,23 @@
 import { useState } from 'react';
 import printData from '../config/data3dprint.json';
 import api from '../services/api';
+import { Material, PrintItem, Quality, Infill } from '../types';
+
+interface PrintOptions {
+  material: string;
+  color: string;
+  quality: string;
+  infill: string;
+}
+
+interface Quote {
+  totalPrice: number;
+}
 
 const Print3DForm = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [quote, setQuote] = useState<any>(null);
-  const [options, setOptions] = useState({
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [options, setOptions] = useState<PrintOptions>({
     material: printData.materials[0].id,
     color: printData.colors[0].id,
     quality: printData.qualities[0].id,
@@ -15,6 +27,7 @@ const Print3DForm = () => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setFile(file);
       const formData = new FormData();
       formData.append('file', file);
       try {
@@ -36,8 +49,10 @@ const Print3DForm = () => {
           value={options.material}
           onChange={(e) => setOptions({...options, material: e.target.value})}
         >
-          {printData.materials.map(m => (
-            <option key={m.id} value={m.id}>{m.name}</option>
+          {(printData.materials as Material[]).map((material) => (
+            <option key={material.id} value={material.id}>
+              {material.name}
+            </option>
           ))}
         </select>
 
@@ -46,8 +61,10 @@ const Print3DForm = () => {
           value={options.color}
           onChange={(e) => setOptions({...options, color: e.target.value})}
         >
-          {printData.colors.map(c => (
-            <option key={c.id} value={c.id}>{c.name}</option>
+          {(printData.colors as PrintItem[]).map((color) => (
+            <option key={color.id} value={color.id}>
+              {color.name}
+            </option>
           ))}
         </select>
 
@@ -56,8 +73,10 @@ const Print3DForm = () => {
           value={options.quality}
           onChange={(e) => setOptions({...options, quality: e.target.value})}
         >
-          {printData.qualities.map(q => (
-            <option key={q.id} value={q.id}>{q.name}</option>
+          {(printData.qualities as Quality[]).map((quality) => (
+            <option key={quality.id} value={quality.id}>
+              {quality.name}
+            </option>
           ))}
         </select>
 
@@ -66,8 +85,10 @@ const Print3DForm = () => {
           value={options.infill}
           onChange={(e) => setOptions({...options, infill: e.target.value})}
         >
-          {printData.infills.map(i => (
-            <option key={i.id} value={i.id}>{i.name}</option>
+          {(printData.infills as Infill[]).map((infill) => (
+            <option key={infill.id} value={infill.id}>
+              {infill.name}
+            </option>
           ))}
         </select>
       </div>
@@ -75,11 +96,11 @@ const Print3DForm = () => {
       {quote && (
         <div>
           <h3>Orçamento</h3>
-          <p>R$ {quote.totalPrice}</p>
+          <p>R$ {quote.totalPrice.toFixed(2)}</p>
         </div>
       )}
     </div>
   );
 };
 
-export default Print3DForm; 
+export default Print3DForm;
