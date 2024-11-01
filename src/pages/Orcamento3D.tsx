@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import printData from '../../lambda/data3dprint.json';
+import printData from '../config/data3dprint.json';
 import api from '../services/api';
 
 interface PrintOptions {
@@ -122,4 +122,4 @@ const Orcamento3D = () => {
   );
 };
 
-export default Orcamento3D; 
+export default Orcamento3D;
