@@ -62,6 +62,10 @@ interface QuoteResponse {
   totalPrice: number;
 }
 
+interface ApiResponse {
+  totalPrice: number;
+}
+
 const Orcamento3D = () => {
   const [quote, setQuote] = useState<{totalPrice: number} | null>(null);
   
@@ -114,7 +118,7 @@ const Orcamento3D = () => {
     formData.append('options', JSON.stringify(options));
 
     try {
-      const response = await api.post<QuoteResponse>('/calculate', formData);
+      const response = await api.post<ApiResponse>('/calculate', formData);
       setQuote(response.data);
     } catch (error) {
       console.error('Erro ao calcular:', error);
